@@ -35,7 +35,7 @@ for i in range(R):
                                     possible_pieces.append(((i, j), (i+nrow-1, j+ncol-1)))
 
 
-candidates_size = 10000
+candidates_size = 5000
 possible_pieces = random.sample(possible_pieces, candidates_size)
 
 n_vars = len(possible_pieces)
@@ -51,11 +51,11 @@ def get_size(data):
 
 c = list(map(get_size, possible_pieces))
 
-n_constraints = 5000
+n_constraints = 500
 if R*C < n_constraints:
     n_constraints = R*C
 A_ub = np.zeros((n_constraints, n_vars))
-print('constraint matrix size{}x{}b'.format(n_constraints, n_vars))
+print('constraint matrix size {}x{}'.format(n_constraints, n_vars))
 
 # for each coordinate, associate it with the list of rectangles that cover it
 coord2pieces = defaultdict(list)
@@ -71,10 +71,13 @@ for i, coord in enumerate(coords):
     for p in pieces:
         A_ub[i][piece2id[p]] = 1
         
-b_ub = np.ones(R*C)
+b_ub = np.ones(n_constraints)
 
+assert b_ub.shape[0] == A_ub.shape[0]
+assert n_vars == A_ub.shape[1]
 
-res = linprog(-np.array(c), A_ub, b_ub, bounds=(0, 1))
+res = linprog(-np.array(c), A_ub, b_ub, bounds=(0, 1),
+              options={'maxiter': 100, 'disp': True})
 # print(res.x)
 
 # randomized rounding

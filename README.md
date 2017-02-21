@@ -1,2 +1,6 @@
-# hashcode-2017-practice
-The pizza problem
+# The pizza problem
+
+
+# Issues
+
+- Scalability with Linear Programming
